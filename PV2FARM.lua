@@ -35,6 +35,9 @@ while true do
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp = character:WaitForChild("HumanoidRootPart")
     
+    -- Primero presionar la tecla F durante 0.5 segundos
+    holdKey("F", 0.5)
+    
     -- Activar primera persona y mirar hacia abajo
     setFirstPersonView()
     
