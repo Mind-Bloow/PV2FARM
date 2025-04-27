@@ -24,12 +24,10 @@ local function holdKey(keyCode, duration)
 end
 
 local function setFirstPersonView()
-    -- Establecer la cámara en primera persona y mirar hacia abajo
-    camera.CameraType = Enum.CameraType.Custom
-    camera.FieldOfView = 70  -- Ajusta el FOV si es necesario
-    player.Character:WaitForChild("Humanoid").CameraOffset = Vector3.new(0, 0, 0) -- Asegura que la vista esté centrada
-    -- Coloca la cámara mirando hacia abajo
-    camera.CFrame = CFrame.new(camera.CFrame.Position, camera.CFrame.Position + Vector3.new(0, -1, 0))
+    -- Asegurarse de que la cámara esté en primera persona
+    player.Character:WaitForChild("Humanoid").CameraMode = Enum.CameraMode.LockFirstPerson
+    -- Ajustar la cámara para mirar hacia abajo
+    camera.CFrame = CFrame.new(camera.CFrame.Position, camera.CFrame.Position + Vector3.new(0, -1, 0)) 
 end
 
 while true do
