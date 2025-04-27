@@ -15,6 +15,7 @@ local waypoints = {
 local Players = game:GetService("Players")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local player = Players.LocalPlayer
+local camera = game.Workspace.CurrentCamera
 
 local function holdKey(keyCode, duration)
     VirtualInputManager:SendKeyEvent(true, Enum.KeyCode[keyCode], false, game)
@@ -22,10 +23,22 @@ local function holdKey(keyCode, duration)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode[keyCode], false, game)
 end
 
+local function setFirstPersonView()
+    -- Establecer la cámara en primera persona y mirar hacia abajo
+    camera.CameraType = Enum.CameraType.Custom
+    camera.FieldOfView = 70  -- Ajusta el FOV si es necesario
+    player.Character:WaitForChild("Humanoid").CameraOffset = Vector3.new(0, 0, 0) -- Asegura que la vista esté centrada
+    -- Coloca la cámara mirando hacia abajo
+    camera.CFrame = CFrame.new(camera.CFrame.Position, camera.CFrame.Position + Vector3.new(0, -1, 0))
+end
+
 while true do
     -- Esperar a que el personaje exista (tras rejoin)
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp = character:WaitForChild("HumanoidRootPart")
+    
+    -- Activar primera persona y mirar hacia abajo
+    setFirstPersonView()
     
     -- Recorrer waypoints (WP0 primero -> WP10 último)
     for _, pos in ipairs(waypoints) do
