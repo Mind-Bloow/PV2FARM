@@ -1,4 +1,3 @@
-holdKey("F", 0.5)
 local waypoints = {
     Vector3.new(-3655, 1154, 38),    -- WP0 (primero)
     Vector3.new(-3701, 1142, -46),   -- WP1
