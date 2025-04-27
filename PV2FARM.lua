@@ -1,3 +1,12 @@
+-- Configuración inicial
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+local camera = game:GetService("Workspace").CurrentCamera
+
+-- Waypoints
 local waypoints = {
     Vector3.new(-3655, 1154, 38),    -- WP0
     Vector3.new(-3701, 1142, -46),   -- WP1
@@ -12,37 +21,47 @@ local waypoints = {
     Vector3.new(-4051, 1111, 59)     -- WP10
 }
 
-local Players = game:GetService("Players")
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local player = Players.LocalPlayer
+-- Función para configurar primera persona mirando al suelo
+local function setFirstPerson()
+    camera.CameraType = Enum.CameraType.Scriptable
+    camera.CFrame = CFrame.new(
+        character.Head.Position,
+        character.Head.Position - Vector3.new(0, 1, 0)
+    camera.FieldOfView = 70
+end
 
+-- Función para presionar teclas
 local function holdKey(key, duration)
     VirtualInputManager:SendKeyEvent(true, Enum.KeyCode[key], false, game)
     task.wait(duration)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode[key], false, game)
 end
 
-local function executeScript()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local hrp = character:WaitForChild("HumanoidRootPart")
-
-    for _, pos in ipairs(waypoints) do
-        hrp.CFrame = CFrame.new(pos)
-        task.wait(0.5)
-        holdKey("E", 10)
-    end
-
-    holdKey("R", 0.5)  -- Presiona R para rejoin
-    task.wait(5)
+-- Función principal
+local function main()
+    setFirstPerson()  -- Configurar cámara
     
-    -- Método alternativo para Xeno (sin queue_on_teleport)
-    local scriptCode = [[
-        task.wait(15)
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Mind-Bloow/PV2FARM/main/PV2FARM.lua"))()
-    ]]
-    game:GetService("ScriptContext").Error:Connect(function()
-        loadstring(scriptCode)()
+    while true do
+        for _, pos in ipairs(waypoints) do
+            hrp.CFrame = CFrame.new(pos)
+            task.wait(0.5)
+            holdKey("E", 10)
+        end
+        
+        holdKey("R", 0.5)  -- Rejoin
+        task.wait(15)      -- Esperar para reconexión
+    end
+end
+
+-- Sistema de autoreinicio (para exploits compatibles)
+if not _G.antiDuplicate then
+    _G.antiDuplicate = true
+    game:GetService("Players").LocalPlayer.OnTeleport:Connect(function()
+        queue_on_teleport([[
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Mind-Bloow/PV2FARM/main/PV2FARM.lua"))()
+        ]])
     end)
 end
 
-executeScript()
+-- Iniciar script
+main()
