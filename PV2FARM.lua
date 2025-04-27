@@ -1,3 +1,4 @@
+holdKey("F", 0.5)
 local waypoints = {
     Vector3.new(-3655, 1154, 38),    -- WP0 (primero)
     Vector3.new(-3701, 1142, -46),   -- WP1
@@ -34,9 +35,6 @@ while true do
     -- Esperar a que el personaje exista (tras rejoin)
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp = character:WaitForChild("HumanoidRootPart")
-    
-    -- Primero presionar la tecla F durante 0.5 segundos
-    holdKey("F", 0.5)
     
     -- Activar primera persona y mirar hacia abajo
     setFirstPersonView()
