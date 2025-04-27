@@ -23,45 +23,75 @@ local waypoints = {
 
 -- Función para configurar primera persona mirando al suelo
 local function setFirstPerson()
-    camera.CameraType = Enum.CameraType.Scriptable
-    camera.CFrame = CFrame.new(
-        character.Head.Position,
-        character.Head.Position - Vector3.new(0, 1, 0)
-    camera.FieldOfView = 70
-end
-
--- Función para presionar teclas
-local function holdKey(key, duration)
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode[key], false, game)
-    task.wait(duration)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode[key], false, game)
-end
-
--- Función principal
-local function main()
-    setFirstPerson()  -- Configurar cámara
-    
-    while true do
-        for _, pos in ipairs(waypoints) do
-            hrp.CFrame = CFrame.new(pos)
-            task.wait(0.5)
-            holdKey("E", 10)
-        end
-        
-        holdKey("R", 0.5)  -- Rejoin
-        task.wait(15)      -- Esperar para reconexión
+    if character:FindFirstChild("Head") then
+        camera.CameraType = Enum.CameraType.Scriptable
+        camera.CFrame = CFrame.new(
+            character.Head.Position,
+            character.Head.Position - Vector3.new(0, 1, 0)
+        )
+        camera.FieldOfView = 70
+    else
+        warn("No se encontró la cabeza del personaje")
     end
 end
 
--- Sistema de autoreinicio (para exploits compatibles)
-if not _G.antiDuplicate then
-    _G.antiDuplicate = true
-    game:GetService("Players").LocalPlayer.OnTeleport:Connect(function()
-        queue_on_teleport([[
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Mind-Bloow/PV2FARM/main/PV2FARM.lua"))()
-        ]])
-    end)
+-- Función para presionar teclas (mejorada)
+local function holdKey(key, duration)
+    local keyCode = Enum.KeyCode[key]
+    if keyCode then
+        for i = 1, math.floor(duration/0.1) do
+            VirtualInputManager:SendKeyEvent(true, keyCode, false, nil)
+            task.wait(0.1)
+            VirtualInputManager:SendKeyEvent(false, keyCode, false, nil)
+        end
+    end
 end
 
--- Iniciar script
-main()
+-- Verificación de personaje
+local function ensureCharacter()
+    while not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") do
+        character = player.CharacterAdded:Wait()
+        task.wait(1)
+    end
+    return player.Character
+end
+
+-- Función principal mejorada
+local function main()
+    character = ensureCharacter()
+    hrp = character:WaitForChild("HumanoidRootPart")
+    setFirstPerson()
+    
+    while true do
+        for i, pos in ipairs(waypoints) do
+            -- Verificar personaje en cada iteración
+            character = ensureCharacter()
+            hrp = character:FindFirstChild("HumanoidRootPart")
+            
+            if hrp then
+                -- Teleport con pequeña altura adicional
+                hrp.CFrame = CFrame.new(pos + Vector3.new(0, 2, 0))
+                task.wait(0.5)
+                
+                -- Presionar E con verificación
+                holdKey("E", 10)
+                
+                -- Espera adicional después del último waypoint
+                if i == #waypoints then
+                    task.wait(1)
+                    holdKey("R", 0.5)
+                    task.wait(15)  -- Tiempo para rejoin
+                end
+            end
+        end
+    end
+end
+
+-- Iniciar script con protección
+local success, err = pcall(main)
+if not success then
+    warn("Error al iniciar el script:", err)
+    -- Intentar reiniciar después de 5 segundos
+    task.wait(5)
+    main()
+end
