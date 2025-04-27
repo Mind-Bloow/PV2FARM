@@ -2,7 +2,7 @@ local waypoints = {
     Vector3.new(-3655, 1154, 38),    -- WP0 (primero)
     Vector3.new(-3701, 1142, -46),   -- WP1
     Vector3.new(-3691, 1137, -177),  -- WP2
-    Vector3.new(-3557, 1109, -179),  -- WP3
+    Vector3.new(-3557, 1111, -177),  -- WP3
     Vector3.new(-3513, 1111, -126),  -- WP4
     Vector3.new(-3474, 1131, 113),   -- WP5
     Vector3.new(-3603, 1111, 70),    -- WP6
@@ -44,10 +44,10 @@ while true do
     for _, pos in ipairs(waypoints) do
         hrp.CFrame = CFrame.new(pos)
         task.wait(0.1)
-        holdKey("E", 4)  -- Recolectar basura
+        holdKey("E", 7)  -- Recolectar basura
     end
 
     -- Presionar R para rejoin y continuar
     holdKey("R", 0.5)
-    task.wait(1)  -- Tiempo para completar el rejoin
+    task.wait(15)  -- Tiempo para completar el rejoin
 end
