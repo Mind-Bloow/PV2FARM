@@ -43,6 +43,7 @@ while true do
     -- Recorrer waypoints (WP0 primero -> WP10 último)
     for _, pos in ipairs(waypoints) do
         hrp.CFrame = CFrame.new(pos)
+        task.wait(0.01)
         holdKey("E", 4)  -- Recolectar basura
     end
 
