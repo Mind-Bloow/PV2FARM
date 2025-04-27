@@ -16,25 +16,35 @@ local Players = game:GetService("Players")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local player = Players.LocalPlayer
 
-local function holdKey(keyCode, duration)
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode[keyCode], false, game)
+local function holdKey(key, duration)
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode[key], false, game)
     task.wait(duration)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode[keyCode], false, game)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode[key], false, game)
 end
 
-while true do
-    -- Esperar a que el personaje exista (tras rejoin)
-    local character = player.Character or player.CharacterAdded:Wait()
-    local hrp = character:WaitForChild("HumanoidRootPart")
-    
-    -- Recorrer waypoints (WP0 primero -> WP10 último)
-    for _, pos in ipairs(waypoints) do
-        hrp.CFrame = CFrame.new(pos)
-        task.wait(0.2)
-        holdKey("E", 10)  -- Recolectar basura
+local function main()
+    while true do
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+
+        for _, pos in ipairs(waypoints) do
+            hrp.CFrame = CFrame.new(pos)
+            task.wait(0.5)
+            holdKey("E", 10)
+        end
+
+        holdKey("R", 0.5)
+        task.wait(15)
     end
-
-    -- Presionar R para rejoin y continuar
-    holdKey("R", 0.5)
-    task.wait(15)  -- Tiempo para completar el rejoin
 end
+
+if not _G.scriptLoaded then
+    _G.scriptLoaded = true
+    game:GetService("Players").LocalPlayer.OnTeleport:Connect(function()
+        queue_on_teleport([[
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Mind-Bloow/PV2FARM/main/PV2FARM.lua"))()
+        ]])
+    end)
+end
+
+main()
