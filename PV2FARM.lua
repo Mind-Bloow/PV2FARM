@@ -44,7 +44,7 @@ while true do
     for _, pos in ipairs(waypoints) do
         hrp.CFrame = CFrame.new(pos)
         task.wait(0.1)
-        holdKey("E", 8)  -- Recolectar basura
+        holdKey("E", 7)  -- Recolectar basura
     end
 
     -- Presionar R para rejoin y continuar
