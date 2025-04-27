@@ -27,24 +27,34 @@ local function main()
         local character = player.Character or player.CharacterAdded:Wait()
         local hrp = character:WaitForChild("HumanoidRootPart")
 
+        -- Recorrer waypoints
         for _, pos in ipairs(waypoints) do
             hrp.CFrame = CFrame.new(pos)
             task.wait(0.5)
-            holdKey("E", 10)
+            holdKey("E", 10)  -- Recolectar
         end
 
-        holdKey("R", 0.5)
-        task.wait(15)
+        -- Rejoin y reinicio forzado (solución universal)
+        holdKey("R", 0.5)  -- Presiona R para rejoin
+        task.wait(25)  -- Espera 25 segundos (ajustable)
+        
+        -- Fuerza la re-ejecución (funciona incluso en exploits gratuitos)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Mind-Bloow/PV2FARM/main/PV2FARM.lua"))()
+        break  -- Rompe el bucle para reiniciar limpio
     end
 end
 
-if not _G.scriptLoaded then
-    _G.scriptLoaded = true
-    game:GetService("Players").LocalPlayer.OnTeleport:Connect(function()
-        queue_on_teleport([[
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Mind-Bloow/PV2FARM/main/PV2FARM.lua"))()
-        ]])
+-- Sistema de autoreinicio mejorado (opcional para exploits pagados)
+if not _G.antiDuplicate then
+    _G.antiDuplicate = true
+    game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(teleportState)
+        if teleportState == Enum.TeleportState.Started then
+            queue_on_teleport([[
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Mind-Bloow/PV2FARM/main/PV2FARM.lua"))()
+            ]])
+        end
     end)
 end
 
+-- Iniciar
 main()
